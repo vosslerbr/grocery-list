@@ -34,7 +34,7 @@
         header="New Category"
         v-model:visible="newCategoryStore.newCategoryModalOpen"
         :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
-        :style="{ width: '30vw !important' }"
+        :style="{ width: '50vw !important' }"
         position="top">
         <div class="field">
           <label for="title">Category Title</label>
@@ -53,7 +53,7 @@
         header="New Item"
         v-model:visible="newItemStore.newItemModalOpen"
         :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
-        :style="{ width: '30vw !important' }"
+        :style="{ width: '50vw !important' }"
         position="top">
         <div class="field">
           <label for="title">Category</label>
@@ -61,8 +61,12 @@
         </div>
 
         <div class="field">
-          <label for="title">Item Name</label>
-          <InputText v-model="newItemStore.newItemName" id="title" />
+          <label for="name">Name</label>
+          <InputText v-model="newItemStore.newItemName" id="name" />
+        </div>
+        <div class="field">
+          <label for="quantity">Quantity</label>
+          <InputNumber v-model="newItemStore.newItemQuantity" id="quantity" />
         </div>
         <template #footer>
           <Button

@@ -11,6 +11,7 @@ import Button from 'primevue/button';
 import Menubar from 'primevue/menubar';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
+import InputNumber from 'primevue/inputnumber';
 
 import App from './App.vue';
 import router from './router';
@@ -35,5 +36,6 @@ app.component('Column', Column);
 app.component('Button', Button);
 app.component('Dialog', Dialog);
 app.component('InputText', InputText);
+app.component('InputNumber', InputNumber);
 
 app.mount('#app');

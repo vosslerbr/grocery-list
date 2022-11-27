@@ -11,7 +11,7 @@ export const useMainStore = defineStore('main', {
       selectedList: {} as List,
       newListModalOpen: false,
       newListTitle: '',
-      tunnelUrl: 'https://13de-2001-48f8-300b-2cb-284a-5114-d050-9166.ngrok.io',
+      tunnelUrl: 'https://1a8a-2001-48f8-300b-2cb-284a-5114-d050-9166.ngrok.io',
     };
   },
   actions: {

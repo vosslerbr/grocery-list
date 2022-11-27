@@ -97,7 +97,8 @@
       header="New List"
       v-model:visible="store.newListModalOpen"
       :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
-      :style="{ width: '30vw !important' }">
+      :style="{ width: '50vw !important' }"
+      position="top">
       <div class="field">
         <label for="title">List Title</label>
         <InputText v-model="store.newListTitle" id="title" />
