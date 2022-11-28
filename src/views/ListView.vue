@@ -14,7 +14,9 @@
         v-for="(category, index) in store.selectedList.categories"
         :key="index"
         :value="category.items"
-        style="margin-bottom: 2rem">
+        style="margin-bottom: 2rem"
+        stripedRows
+        class="p-datatable-sm">
         <template #header>
           <div class="list-toolbar">
             <h3>{{ category.title }}</h3>
@@ -26,8 +28,24 @@
           </div>
         </template>
         <template #empty> No items in this category. </template>
-        <Column field="name"></Column>
-        <Column field="quantity"></Column>
+        <Column field="name" header="Name" style="width: 50%"></Column>
+        <Column field="quantity" header="Quantity"></Column>
+        <Column header="Edit" style="max-width: 4rem">
+          <template #body="slotProps">
+            <Button
+              icon="pi pi-pencil"
+              class="p-button-secondary p-button-sm"
+              @click="handleEditItemClick(slotProps.data._id)"></Button>
+          </template>
+        </Column>
+        <Column header="Delete" style="max-width: 4rem">
+          <template #body="slotProps">
+            <Button
+              icon="pi pi-trash"
+              class="p-button-danger p-button-sm"
+              @click="handleDeleteItemClick(slotProps.data._id)"></Button>
+          </template>
+        </Column>
       </DataTable>
 
       <Dialog
@@ -56,8 +74,7 @@
         :style="{ width: '50vw !important' }"
         position="top">
         <div class="field">
-          <label for="title">Category</label>
-          <p>{{ newItemStore.newItemCategoryTitle }}</p>
+          <Tag :value="newItemStore.newItemCategoryTitle" icon="pi pi-folder-open" />
         </div>
 
         <div class="field">
@@ -66,7 +83,17 @@
         </div>
         <div class="field">
           <label for="quantity">Quantity</label>
-          <InputNumber v-model="newItemStore.newItemQuantity" id="quantity" />
+          <InputNumber
+            v-model="newItemStore.newItemQuantity"
+            id="quantity"
+            showButtons
+            buttonLayout="horizontal"
+            :step="1"
+            :min="1"
+            decrementButtonClass="p-button-secondary"
+            incrementButtonClass="p-button-secondary"
+            incrementButtonIcon="pi pi-plus"
+            decrementButtonIcon="pi pi-minus" />
         </div>
         <template #footer>
           <Button
@@ -159,13 +186,17 @@
       console.error(error);
     }
   };
+
+  const handleEditItemClick = async (id: string) => {
+    console.log(id);
+  };
+
+  const handleDeleteItemClick = async (id: string) => {
+    console.log(id);
+  };
 </script>
 
 <style scoped>
-  ::v-deep(.p-datatable-thead) {
-    display: none;
-  }
-
   .list-toolbar {
     display: flex;
     justify-content: space-between;

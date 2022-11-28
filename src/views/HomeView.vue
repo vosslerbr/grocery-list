@@ -31,7 +31,7 @@
 
   const handleNewCategoryCreateClick = async () => {
     try {
-      const response = await fetch(`${store.tunnelUrl}/list`, {
+      await fetch(`${store.tunnelUrl}/list`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

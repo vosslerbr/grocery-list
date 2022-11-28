@@ -12,6 +12,7 @@ import Menubar from 'primevue/menubar';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
+import Tag from 'primevue/tag';
 
 import App from './App.vue';
 import router from './router';
@@ -37,5 +38,6 @@ app.component('Button', Button);
 app.component('Dialog', Dialog);
 app.component('InputText', InputText);
 app.component('InputNumber', InputNumber);
+app.component('Tag', Tag);
 
 app.mount('#app');
