@@ -24,7 +24,7 @@
               label="Add Item"
               icon="pi pi-plus"
               class="p-button-secondary p-button-sm"
-              @click="handleNewItemClick(category)"></Button>
+              @click="handleAddItemClick(category)"></Button>
           </div>
         </template>
         <template #empty> No items in this category. </template>
@@ -62,8 +62,8 @@
           <Button
             label="Cancel"
             class="p-button-danger p-button-text"
-            @click="handleNewCategoryCancelClick" />
-          <Button label="Create" icon="pi pi-check" @click="handleNewCategoryCreateClick" />
+            @click="handleNewCategoryFormCancel" />
+          <Button label="Create" icon="pi pi-check" @click="handleNewCategorySubmit" />
         </template>
       </Dialog>
 
@@ -99,8 +99,8 @@
           <Button
             label="Cancel"
             class="p-button-danger p-button-text"
-            @click="handleNewItemCancelClick" />
-          <Button label="Create" icon="pi pi-check" @click="handleNewItemCreateClick" />
+            @click="handleNewItemFormCancel" />
+          <Button label="Create" icon="pi pi-check" @click="handleNewItemSubmit" />
         </template>
       </Dialog>
     </div>
@@ -111,9 +111,10 @@
   import { useMainStore } from '@/stores/main';
   import { useNewCategoryStore } from '@/stores/newCategory';
   import { useNewItemStore } from '@/stores/newItem';
-
   import { onMounted } from 'vue';
   import { useRoute } from 'vue-router';
+  import { inject } from 'vue';
+  import type { Socket } from 'socket.io-client';
 
   const store = useMainStore();
   const newCategoryStore = useNewCategoryStore();
@@ -121,43 +122,47 @@
   const route = useRoute();
 
   const id = route.params.id as string;
-  console.log(id);
+
+  const socket = inject('socket') as Socket;
+
+  socket.on('add item', async (res: SocketResponse) => {
+    if (res.success) {
+      await store.fetchListById(socket, store.selectedList._id, false);
+    } else {
+      console.log(res.message);
+    }
+  });
+
+  socket.on('add category', async (res: SocketResponse) => {
+    if (res.success) {
+      await store.fetchListById(socket, store.selectedList._id, false);
+    } else {
+      console.log(res.message);
+    }
+  });
 
   onMounted(async () => {
-    await store.fetchListById(route.params.id as string);
+    await store.fetchListById(socket, id, true);
   });
 
   const handleNewCategoryClick = () => {
     newCategoryStore.newCategoryModalOpen = true;
   };
 
-  const handleNewItemClick = (category: any) => {
-    newItemStore.newItemCategoryId = category._id;
-    newItemStore.newItemCategoryTitle = category.title;
-    newItemStore.newItemModalOpen = true;
-  };
-
-  const handleNewCategoryCancelClick = () => {
+  const handleNewCategoryFormCancel = () => {
     newCategoryStore.$reset();
   };
 
-  const handleNewItemCancelClick = () => {
-    newItemStore.$reset();
-  };
-
-  const handleNewCategoryCreateClick = async () => {
+  // when user submits the Add Category form
+  const handleNewCategorySubmit = async () => {
     try {
-      await fetch(`${store.tunnelUrl}/list/${store.selectedList._id}/category`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: newCategoryStore.newCategoryTitle,
-        }),
+      await socket.emit('add category', {
+        listId: store.selectedList._id,
+        title: newCategoryStore.newCategoryTitle,
       });
 
-      await store.fetchListById(store.selectedList._id);
+      // fetch the list again, but don't trigger the page load animation
+      await store.fetchListById(socket, store.selectedList._id, false);
 
       newCategoryStore.$reset();
     } catch (error) {
@@ -165,21 +170,30 @@
     }
   };
 
-  const handleNewItemCreateClick = async () => {
+  // when user clicks the Add Item button
+  const handleAddItemClick = (category: any) => {
+    newItemStore.newItemCategoryId = category._id;
+    newItemStore.newItemCategoryTitle = category.title;
+    newItemStore.newItemModalOpen = true;
+  };
+
+  const handleNewItemFormCancel = () => {
+    newItemStore.$reset();
+  };
+
+  // when user submits the Add Item form
+  const handleNewItemSubmit = async () => {
     try {
-      await fetch(`${store.tunnelUrl}/category/${newItemStore.newItemCategoryId}/item`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: newItemStore.newItemName,
-          quantity: newItemStore.newItemQuantity,
-          checked: newItemStore.newItemChecked,
-        }),
+      // emit the new item to the server
+      await socket.emit('add item', {
+        categoryId: newItemStore.newItemCategoryId,
+        name: newItemStore.newItemName,
+        quantity: newItemStore.newItemQuantity,
+        checked: newItemStore.newItemChecked,
       });
 
-      await store.fetchListById(store.selectedList._id);
+      // fetch the list again, but don't trigger the page load animation
+      await store.fetchListById(socket, store.selectedList._id, false);
 
       newItemStore.$reset();
     } catch (error) {
@@ -187,10 +201,12 @@
     }
   };
 
+  // TODO
   const handleEditItemClick = async (id: string) => {
     console.log(id);
   };
 
+  // TODO
   const handleDeleteItemClick = async (id: string) => {
     console.log(id);
   };

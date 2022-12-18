@@ -13,6 +13,7 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Tag from 'primevue/tag';
+import Socketio from './plugins/socket';
 
 import App from './App.vue';
 import router from './router';
@@ -28,6 +29,11 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(PrimeVue);
 app.use(router);
+
+app.use(Socketio, {
+  connection: 'https://79ad-97-88-53-102.ngrok.io',
+  options: { path: '/list-socket' },
+});
 
 app.component('Message', Message);
 app.component('Card', Card);

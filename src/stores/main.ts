@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import type { Socket } from 'socket.io-client';
 
 export const useMainStore = defineStore('main', {
   state: () => {
@@ -11,7 +12,7 @@ export const useMainStore = defineStore('main', {
       selectedList: {} as List,
       newListModalOpen: false,
       newListTitle: '',
-      tunnelUrl: 'https://1a8a-2001-48f8-300b-2cb-284a-5114-d050-9166.ngrok.io',
+      tunnelUrl: 'https://79ad-97-88-53-102.ngrok.io',
     };
   },
   actions: {
@@ -31,16 +32,16 @@ export const useMainStore = defineStore('main', {
         console.error(error);
       }
     },
-    async fetchListById(id: string) {
+    async fetchListById(socket: Socket, id: string, triggerLoad: boolean) {
       try {
-        this.listpageLoading = true;
+        this.listpageLoading = triggerLoad;
 
-        const response = await fetch(`${this.tunnelUrl}/list/${id}`);
+        socket.emit('get list', id);
 
-        const data = await response.json();
-
-        this.selectedList = data.record;
-        this.listpageLoading = false;
+        socket.on('get list', ({ data }) => {
+          this.selectedList = data;
+          this.listpageLoading = false;
+        });
       } catch (error) {
         this.error = true;
         this.listpageLoading = false;
